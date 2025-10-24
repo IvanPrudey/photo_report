@@ -32,6 +32,18 @@ class User(AbstractUser):
         verbose_name='Подтвержден'
     )
     last_activity = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Последняя активность'
+        null=True,
+        blank=True,
+        verbose_name='Последняя активность',
+        help_text='Время последней активности пользователя в боте'
     )
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        ordering = ['-date_joined']
+
+    def __str__(self):
+        if self.first_name and self.last_name:
+            return f'{self.first_name} {self.last_name}'
+        return self.username
