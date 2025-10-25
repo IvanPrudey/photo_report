@@ -92,7 +92,28 @@ class CategoryProduct(models.Model):
 
 
 class BrandProduct(models.Model):
-    pass
+    name = models.CharField(
+        max_length=30,
+        verbose_name='Название бренда'
+    )
+    category = models.ForeignKey(
+        CategoryProduct,
+        on_delete=models.CASCADE,
+        verbose_name='Категория',
+        related_name='brands'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Активен'
+    )
+
+    class Meta:
+        verbose_name = 'Бренд'
+        verbose_name_plural = 'Бренды'
+        ordering = ['name']
+
+    def __str__(self):
+        return f'{self.name} ({self.category})'
 
 
 class PhotoReport(models.Model):
