@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 from constants.constants import (
-    ROLE_CHOICES
+    ROLE_CHOICES,
+    CATEGORY_CHOICES
 )
 
 
@@ -47,3 +49,51 @@ class User(AbstractUser):
         if self.first_name and self.last_name:
             return f'{self.first_name} {self.last_name}'
         return self.username
+
+    def update_activity(self):
+        User.objects.filter(pk=self.pk).update(last_activity=timezone.now())
+
+
+class TradingClient(models.Model):
+    name = models.CharField(
+        max_length=200,
+        unique=True,
+        verbose_name='Название сети'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Активна'
+    )
+
+    class Meta:
+        verbose_name = 'Аптечная сеть'
+        verbose_name_plural = 'Аптечные сети'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class CategoryProduct(models.Model):
+    name = models.CharField(
+        max_length=10,
+        choices=CATEGORY_CHOICES,
+        unique=True,
+        verbose_name='Категория'
+    )
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.get_name_display()
+
+
+class BrandProduct(models.Model):
+    pass
+
+
+class PhotoReport(models.Model):
+    pass
