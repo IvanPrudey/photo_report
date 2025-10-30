@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from constants.constants import (
     ROLE_CHOICES,
     CATEGORY_CHOICES
 )
+from upload_paths import photo_upload_path
 
 
 class User(AbstractUser):
@@ -117,4 +119,79 @@ class BrandProduct(models.Model):
 
 
 class PhotoReport(models.Model):
-    pass
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь',
+        related_name='reports'
+    )
+    trading_client = models.ForeignKey(
+        TradingClient,
+        on_delete=models.CASCADE,
+        verbose_name='Аптечная сеть'
+    )
+    category = models.ForeignKey(
+        CategoryProduct,
+        on_delete=models.CASCADE,
+        verbose_name='Категория'
+    )
+    brand = models.ForeignKey(
+        BrandProduct,
+        on_delete=models.CASCADE,
+        verbose_name='Бренд'
+    )
+    is_competitor = models.BooleanField(
+        default=False,
+        verbose_name='Отчет по конкуренту'
+    )
+    photo_1 = models.ImageField(
+        upload_to=photo_upload_path,
+        verbose_name='Фото 1',
+        null=True,
+        blank=True
+    )
+    photo_2 = models.ImageField(
+        upload_to=photo_upload_path,
+        verbose_name='Фото 2',
+        null=True,
+        blank=True
+    )
+    photo_3 = models.ImageField(
+        upload_to=photo_upload_path,
+        verbose_name='Фото 3',
+        null=True,
+        blank=True
+    )
+    comment = models.TextField(
+        blank=True, 
+        verbose_name='Комментарий'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания'
+    )
+
+    class Meta:
+        verbose_name = 'Фотоотчет'
+        verbose_name_plural = 'Фотоотчеты'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        if self.is_competitor:
+            return f'Отчет по конкуренту - {self.trading_client} - {self.category}'
+        else:
+            return f'Отчет по {self.brand} - {self.trading_client}'
+
+    def get_photos_count(self):
+        count = 0
+        if self.photo_1:
+            count += 1
+        if self.photo_2:
+            count += 1
+        if self.photo_3:
+            count += 1
+        return count
+
+    def clean(self):
+        if not self.brand:
+            raise ValidationError('Бренд должен быть выбран')
