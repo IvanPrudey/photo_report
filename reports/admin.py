@@ -25,24 +25,38 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ['role', 'is_verified', 'is_active', 'date_joined']
     search_fields = ['username', 'telegram_id', 'first_name', 'last_name']
     ordering = ['-date_joined']
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Персональная информация', {'fields': (
+            'first_name',
+            'last_name',
+            'email'
+        )}),
+        ('Telegram данные', {'fields': (
+            'telegram_id',
+            'role',
+            'phone',
+            'is_verified',
+            'last_activity'
+        )}),
+        ('Разрешения', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        ('Важные даты', {'fields': ('last_login', 'date_joined')}),
+    )
 
-    fieldsets = UserAdmin.fieldsets + (
-        ('Telegram данные', {
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
             'fields': (
+                'username',
+                'password1',
+                'password2',
                 'telegram_id',
                 'role',
-                'phone',
-                'is_verified',
-                'last_activity'
-            )
+                'phone'
+            ),
         }),
     )
-
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Telegram данные', {
-            'fields': ('telegram_id', 'role', 'phone')
-        }),
-    )
+    filter_horizontal = []
 
 
 @admin.register(CategoryProduct)
