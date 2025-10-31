@@ -7,11 +7,13 @@ from constants.constants import (
     ROLE_CHOICES,
     CATEGORY_CHOICES
 )
-from upload_paths import photo_upload_path
+from .upload_paths import photo_upload_path
 
 
 class User(AbstractUser):
 
+    groups = None
+    user_permissions = None
     telegram_id = models.BigIntegerField(
         unique=True,
         blank=True,
