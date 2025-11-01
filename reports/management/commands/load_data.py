@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
     def load_trading_clients(self):
         csv_path = (
-            Path(__file__).resolve().parents[2]
+            Path(__file__).resolve().parents[3]
             / 'data' 
             / 'tradingclient.CSV'
         )
@@ -42,7 +42,7 @@ class Command(BaseCommand):
 
     def load_categories(self):
         csv_path = (
-            Path(__file__).resolve().parents[2]
+            Path(__file__).resolve().parents[3]
             / 'data'
             / 'category.CSV'
         )
@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
     def load_brands(self):
         csv_path = (
-            Path(__file__).resolve().parents[2]
+            Path(__file__).resolve().parents[3]
             / 'data'
             / 'brand.CSV'
         )
