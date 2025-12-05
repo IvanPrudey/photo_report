@@ -3,10 +3,14 @@ import os
 
 def photo_upload_path(instance, filename):
     safe_chain_name = ''.join(
-        c for c in instance.trading_client.name if c.isalnum() or c in (' ', '-', '_')
+        c for c in instance.trading_client.name if c.isalnum() or c in (
+            ' ', '-', '_'
+        )
     ).rstrip()
     safe_category_name = ''.join(
-        c for c in instance.category.name if c.isalnum() or c in (' ', '-', '_')
+        c for c in instance.category.name if c.isalnum() or c in (
+            ' ', '-', '_'
+        )
     ).rstrip()
     if instance.is_competitor:
         brand_folder = os.path.join(instance.brand.name, 'competitor')
