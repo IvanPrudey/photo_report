@@ -35,6 +35,4 @@ media/
 *migrations*
 
 .gitignore
-bot.py
 handlers.py
-run_bot.py
