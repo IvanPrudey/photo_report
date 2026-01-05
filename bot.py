@@ -26,7 +26,7 @@ class PharmacyBot:
         self.application = Application.builder().token(self.token).build()
         self.handlers = Handlers()
         self.setup_handlers()
-    
+
     def setup_handlers(self):
         conv_handler = ConversationHandler(
             entry_points=[CommandHandler('new_report', self.handlers.new_report)],
@@ -51,11 +51,11 @@ class PharmacyBot:
             },
             fallbacks=[CommandHandler('cancel', self.handlers.cancel)]
         )
-        
+
         self.application.add_handler(CommandHandler("start", self.handlers.start))
         self.application.add_handler(conv_handler)
         self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.unknown_command))
-    
+
     def run(self):
         """Запуск бота"""
         self.application.run_polling()
