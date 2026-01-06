@@ -28,33 +28,46 @@ class PharmacyBot:
         self.setup_handlers()
 
     def setup_handlers(self):
+        """Настройка всех обработчиков команд"""
+
+        # Обработчик для команды "Завершить отчет" из любого состояния
+        cancel_command = CommandHandler('cancel', self.handlers.cancel)
+        finish_text = MessageHandler(filters.Regex(r'^Завершить.*отчет$'), self.handlers.handle_finish_anywhere)
+
         conv_handler = ConversationHandler(
             entry_points=[CommandHandler('new_report', self.handlers.new_report)],
             states={
                 SELECTING_CHAIN: [
-                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.select_chain)
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.select_chain),
+                    finish_text  # Можно завершить даже на этапе выбора сети
                 ],
                 SELECTING_CATEGORY: [
-                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.select_category)
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.select_category),
+                    finish_text  # Можно завершить на этапе выбора категории
                 ],
                 SELECTING_BRAND: [
-                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.select_brand)
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.select_brand),
+                    finish_text  # Можно завершить на этапе выбора бренда
                 ],
                 UPLOADING_PHOTOS: [
                     MessageHandler(filters.PHOTO, self.handlers.handle_photo),
-                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.handle_text)
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.handle_text),
+                    finish_text  # Можно завершить при загрузке фото
                 ],
                 COMPETITOR_MODE: [
                     MessageHandler(filters.PHOTO, self.handlers.handle_competitor_photo),
-                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.handle_competitor_text)
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.handle_competitor_text),
+                    finish_text  # Можно завершить в режиме конкурентов
                 ]
             },
-            fallbacks=[CommandHandler('cancel', self.handlers.cancel)]
+            fallbacks=[cancel_command, finish_text]  # Двойной fallback
         )
 
         self.application.add_handler(CommandHandler("start", self.handlers.start))
         self.application.add_handler(conv_handler)
-        self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.unknown_command))
+        self.application.add_handler(
+            MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.unknown_command)
+        )
 
     def run(self):
         """Запуск бота"""
