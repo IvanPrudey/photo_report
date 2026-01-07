@@ -29,42 +29,45 @@ class PharmacyBot:
 
     def setup_handlers(self):
         """Настройка всех обработчиков команд"""
-
-        # Обработчик для команды "Завершить отчет" из любого состояния
         cancel_command = CommandHandler('cancel', self.handlers.cancel)
         finish_text = MessageHandler(filters.Regex(r'^Завершить.*отчет$'), self.handlers.handle_finish_anywhere)
-
+        new_report_button = MessageHandler(filters.Regex(r'^(📋 )?Новый отчет$'), self.handlers.new_report)
         conv_handler = ConversationHandler(
-            entry_points=[CommandHandler('new_report', self.handlers.new_report)],
+            entry_points=[
+                CommandHandler('new_report', self.handlers.new_report),
+                new_report_button
+            ],
             states={
                 SELECTING_CHAIN: [
                     MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.select_chain),
-                    finish_text  # Можно завершить даже на этапе выбора сети
+                    finish_text
                 ],
                 SELECTING_CATEGORY: [
                     MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.select_category),
-                    finish_text  # Можно завершить на этапе выбора категории
+                    finish_text
                 ],
                 SELECTING_BRAND: [
                     MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.select_brand),
-                    finish_text  # Можно завершить на этапе выбора бренда
+                    finish_text
                 ],
                 UPLOADING_PHOTOS: [
                     MessageHandler(filters.PHOTO, self.handlers.handle_photo),
                     MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.handle_text),
-                    finish_text  # Можно завершить при загрузке фото
+                    finish_text
                 ],
                 COMPETITOR_MODE: [
                     MessageHandler(filters.PHOTO, self.handlers.handle_competitor_photo),
                     MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.handle_competitor_text),
-                    finish_text  # Можно завершить в режиме конкурентов
+                    finish_text
                 ]
             },
-            fallbacks=[cancel_command, finish_text]  # Двойной fallback
+            fallbacks=[cancel_command, finish_text, new_report_button]
         )
 
         self.application.add_handler(CommandHandler("start", self.handlers.start))
         self.application.add_handler(conv_handler)
+
+        # Обновляем unknown_command, чтобы обрабатывать все текстовые сообщения
         self.application.add_handler(
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.unknown_command)
         )
@@ -76,5 +79,5 @@ class PharmacyBot:
 
 if __name__ == "__main__":
     bot = PharmacyBot()
-    print("Бот запущен...")
+    print("Запуск бота - выполнено!")
     bot.run()
