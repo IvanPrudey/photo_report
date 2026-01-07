@@ -35,4 +35,3 @@ media/
 *migrations*
 
 .gitignore
-handlers.py
