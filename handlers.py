@@ -87,6 +87,32 @@ class Handlers:
             logger.error(f'Ошибка при получении статистики: {e}')
             return None
 
+    def format_statistics_message(self, stats_data):
+        """Форматирование статистики в сообщение"""
+        try:
+            if not stats_data:
+                return '❌ Ошибка при получении статистики'
+            if not stats_data['reports']:
+                return f'📊 *Статистика за {stats_data['month_name']} {stats_data['year']}*\n\n' \
+                       'Отчетов за этот месяц еще нет.'
+            stats = stats_data['stats']
+            sorted_chains = sorted(stats.keys())
+            stats_text = f'📊 *Статистика за {stats_data['month_name']} {stats_data['year']}:*\n\n'
+            total_reports = 0
+            for chain in sorted_chains:
+                sorted_brands = sorted(stats[chain].keys())
+                for brand in sorted_brands:
+                    count = stats[chain][brand]
+                    total_reports += count
+                    stats_text += f'• {chain}/{brand} - {count}\n'
+                if chain != sorted_chains[-1]:
+                    stats_text += '\n'
+            stats_text += f'\n📈 *Итого:* {total_reports} отчетов'
+            return stats_text
+        except Exception as e:
+            logger.error(f'Ошибка при форматировании статистики: {e}')
+            return '❌ Ошибка при форматировании статистики'
+
     async def new_report(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Начало создания нового отчета"""
         user_data = context.user_data
