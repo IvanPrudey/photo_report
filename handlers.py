@@ -26,7 +26,7 @@ class Handlers:
         pass
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Обработчик команды /start"""
+        """Обработчик команды /start."""
         user = update.effective_user
         keyboard = [
             ["📋 Новый отчет"],
@@ -50,7 +50,7 @@ class Handlers:
         await update.message.reply_text(welcome_text, reply_markup=reply_markup)
 
     async def get_monthly_statistics_data(self, year=None, month=None):
-        """Получение статистики за месяц(если None - текущий)"""
+        """Получение статистики за месяц(если None - текущий)."""
         try:
             now = datetime.now()
             current_year = year if year is not None else now.year
@@ -88,7 +88,7 @@ class Handlers:
             return None
 
     def format_statistics_message(self, stats_data):
-        """Форматирование статистики в сообщение"""
+        """Форматирование статистики в сообщение."""
         try:
             if not stats_data:
                 return '❌ Ошибка при получении статистики'
@@ -112,6 +112,44 @@ class Handlers:
         except Exception as e:
             logger.error(f'Ошибка при форматировании статистики: {e}')
             return '❌ Ошибка при форматировании статистики'
+        
+    async def show_statistics(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Вывод статистики."""
+        try:
+            stats_data = await self.get_monthly_statistics_data()
+            if stats_data is None:
+                keyboard = [
+                    ["📋 Новый отчет"],
+                    ["📊 Статистика"]
+                ]
+                reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
+                await update.message.reply_text(
+                    '❌ Произошла ошибка при получении статистики. Попробуйте позже.',
+                    reply_markup=reply_markup
+                )
+                return
+            stats_message = self.format_statistics_message(stats_data)
+            keyboard = [
+                ["📋 Новый отчет"],
+                ["📊 Статистика"]
+            ]
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
+            await update.message.reply_text(
+                stats_message,
+                parse_mode='Markdown',
+                reply_markup=reply_markup
+            )
+        except Exception as e:
+            logger.error(f"Ошибка в show_statistics: {e}")
+            keyboard = [
+                ["📋 Новый отчет"],
+                ["📊 Статистика"]
+            ]
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
+            await update.message.reply_text(
+                '❌ Произошла ошибка при получении статистики. Попробуйте позже.',
+                reply_markup=reply_markup
+            )
 
     async def new_report(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Начало создания нового отчета"""
