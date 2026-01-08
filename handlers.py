@@ -36,16 +36,16 @@ class Handlers:
         db_user, created = await sync_to_async(User.objects.get_or_create)(
             telegram_id=user.id,
             defaults={
-                'username': user.username or f"user_{user.id}",
+                'username': user.username or f'user_{user.id}',
                 'first_name': user.first_name or '',
                 'last_name': user.last_name or ''
             }
         )
         await sync_to_async(db_user.update_activity)()
         welcome_text = (
-            f"Добро пожаловать, {user.first_name}!\n\n"
-            "Я бот для создания фотоотчетов по мерчандайзингу.\n"
-            "Выберите действие:"
+            f'Добро пожаловать, {user.first_name}!\n\n'
+            'Я бот для создания фотоотчетов по мерчандайзингу.\n'
+            'Выберите действие:'
         )
         await update.message.reply_text(welcome_text, reply_markup=reply_markup)
 
@@ -140,7 +140,7 @@ class Handlers:
                 reply_markup=reply_markup
             )
         except Exception as e:
-            logger.error(f"Ошибка в show_statistics: {e}")
+            logger.error(f'Ошибка в show_statistics: {e}')
             keyboard = [
                 ["📋 Новый отчет"],
                 ["📊 Статистика"]
@@ -157,12 +157,12 @@ class Handlers:
         user_data.clear()
         chains = await sync_to_async(list)(TradingClient.objects.filter(is_active=True))
         if not chains:
-            await update.message.reply_text("Нет доступных аптечных сетей. Обратитесь к администратору.")
+            await update.message.reply_text('Нет доступных аптечных сетей. Обратитесь к администратору.')
             return ConversationHandler.END
         keyboard = [[chain.name] for chain in chains]
         reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
         await update.message.reply_text(
-            "Выберите аптечную сеть:",
+            'Выберите аптечную сеть:',
             reply_markup=reply_markup
         )
         return SELECTING_CHAIN
@@ -182,16 +182,16 @@ class Handlers:
             keyboard = [[category.get_name_display()] for category in categories]
             reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
             await update.message.reply_text(
-                "Выберите категорию товаров:",
+                'Выберите категорию товаров:',
                 reply_markup=reply_markup
             )
             return SELECTING_CATEGORY
         except TradingClient.DoesNotExist:
-            await update.message.reply_text("Аптечная сеть не найдена. Попробуйте еще раз.")
+            await update.message.reply_text('Аптечная сеть не найдена. Попробуйте еще раз.')
             return SELECTING_CHAIN
 
     async def select_category(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Выбор категории"""
+        """Выбор категории."""
         category_display = update.message.text
         user_data = context.user_data
         try:
@@ -209,21 +209,21 @@ class Handlers:
                 BrandProduct.objects.filter(category=category, is_active=True)
             )
             if not brands:
-                await update.message.reply_text("Нет доступных брендов для выбранной категории.")
+                await update.message.reply_text('Нет доступных брендов для выбранной категории.')
                 return ConversationHandler.END
             keyboard = [[brand.name] for brand in brands]
             reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
             await update.message.reply_text(
-                "Выберите бренд:",
+                'Выберите бренд:',
                 reply_markup=reply_markup
             )
             return SELECTING_BRAND
         except CategoryProduct.DoesNotExist:
-            await update.message.reply_text("Категория не найдена. Попробуйте еще раз.")
+            await update.message.reply_text('Категория не найдена. Попробуйте еще раз.')
             return SELECTING_CATEGORY
 
     async def select_brand(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Выбор бренда"""
+        """Выбор бренда."""
         brand_name = update.message.text
         user_data = context.user_data
         try:
@@ -253,29 +253,29 @@ class Handlers:
             ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
             await update.message.reply_text(
-                f"Начинаем загрузку фото для бренда {brand_name}\n\n"
-                "Сделайте и отправьте до 3 фотографий,\n"
-                "или перейдите к фотоотчету по конкуренту бренда\n",
+                f'Начинаем загрузку фото для бренда {brand_name}\n\n'
+                'Сделайте и отправьте до 3 фотографий,\n'
+                'или перейдите к фотоотчету по конкуренту бренда\n',
                 reply_markup=reply_markup
             )
             return UPLOADING_PHOTOS
         except BrandProduct.DoesNotExist:
-            await update.message.reply_text("Бренд не найден. Попробуйте еще раз.")
+            await update.message.reply_text('Бренд не найден. Попробуйте еще раз.')
             return SELECTING_BRAND
 
     async def handle_photo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Обработка фотографий своего бренда"""
+        """Обработка фотографий своего бренда."""
         user_data = context.user_data
         photo_count = user_data.get('photo_count', 0)
         if photo_count >= 3:
-            await update.message.reply_text("✅ Максимальное количество фото (3/3) уже загружено.")
+            await update.message.reply_text('✅ Максимальное количество фото (3/3) уже загружено.')
             keyboard = [
                 ["Завершить отчет"],
                 ["Перейти к конкурентам"]
             ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
             await update.message.reply_text(
-                "Вы можете завершить отчет или перейти к конкурентам.",
+                'Вы можете завершить отчет или перейти к конкурентам.',
                 reply_markup=reply_markup
             )
             return UPLOADING_PHOTOS
@@ -300,38 +300,38 @@ class Handlers:
                     ContentFile(photo_buffer.getvalue())
                 )
             user_data['photo_count'] = photo_count + 1
-            progress_text = f"✅ Фото {user_data['photo_count']}/3 сохранено!"
+            progress_text = f'✅ Фото {user_data['photo_count']}/3 сохранено!'
             if user_data['photo_count'] >= 3:
                 keyboard = [
                     ["Завершить отчет"],
                     ["Перейти к конкурентам"]
                 ]
-                progress_text += "\n\n🎉 Все фото загружены!"
+                progress_text += '\n\n🎉 Все фото загружены!'
             else:
                 keyboard = [
                     ["Сделать фото"],
                     ["Завершить отчет"],
                     ["Перейти к конкурентам"]
                 ]
-                progress_text += f"\nМожно добавить еще {3 - user_data['photo_count']} фото"
+                progress_text += f'\nМожно добавить еще {3 - user_data['photo_count']} фото'
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
             await update.message.reply_text(progress_text, reply_markup=reply_markup)
         except PhotoReport.DoesNotExist:
-            await update.message.reply_text("❌ Ошибка: отчет не найден. Начните заново с /new_report")
+            await update.message.reply_text('❌ Ошибка: отчет не найден. Начните заново с /new_report')
             return ConversationHandler.END
         return UPLOADING_PHOTOS
 
     async def handle_text(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Обработка текстовых команд в режиме загрузки фото"""
+        """Обработка текстовых команд в режиме загрузки фото."""
         text = update.message.text
         user_data = context.user_data
-        if text == "Завершить отчет":
+        if text == 'Завершить отчет':
             return await self.finish_report(update, context)
-        elif text == "Перейти к конкурентам":
+        elif text == 'Перейти к конкурентам':
             return await self.start_competitor_mode(update, context)
-        elif text == "Сделать фото":
+        elif text == 'Сделать фото':
             await update.message.reply_text(
-                "📸 Отправьте фото в чат. Вы можете отправить до 3 фотографий."
+                '📸 Отправьте фото в чат. Вы можете отправить до 3 фотографий.'
             )
         else:
             try:
@@ -339,9 +339,9 @@ class Handlers:
                     report = await sync_to_async(PhotoReport.objects.get)(id=user_data['report_id'])
                     report.comment = text
                     await sync_to_async(report.save)()
-                    await update.message.reply_text("✅ Комментарий сохранен!")
+                    await update.message.reply_text('✅ Комментарий сохранен!')
             except PhotoReport.DoesNotExist:
-                await update.message.reply_text("❌ Ошибка: отчет не найден")
+                await update.message.reply_text('❌ Ошибка: отчет не найден')
         return UPLOADING_PHOTOS
 
     async def start_competitor_mode(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -365,24 +365,24 @@ class Handlers:
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
         await update.message.reply_text(
-            "📸 *Режим конкурентов*\n\n"
-            "Теперь делайте фото конкурентных товаров.\n"
-            "Можно загрузить до 3 фото.\n\n",
+            '📸 *Режим конкурентов*\n\n'
+            'Теперь делайте фото конкурентных товаров.\n'
+            'Можно загрузить до 3 фото.\n\n',
             reply_markup=reply_markup,
             parse_mode='Markdown'
         )
         return COMPETITOR_MODE
 
     async def handle_competitor_photo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Обработка фотографий конкурентов"""
+        """Обработка фотографий конкурентов."""
         user_data = context.user_data
         photo_count = user_data.get('competitor_photo_count', 0)
         if photo_count >= 3:
-            await update.message.reply_text("✅ Максимальное количество фото конкурентов (3) достигнуто.")
+            await update.message.reply_text('✅ Максимальное количество фото конкурентов (3) достигнуто.')
             keyboard = [["Завершить конкурентный отчет"]]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
             await update.message.reply_text(
-                "Вы можете завершить конкурентный отчет.",
+                'Вы можете завершить конкурентный отчет.',
                 reply_markup=reply_markup
             )
             return COMPETITOR_MODE
@@ -407,102 +407,114 @@ class Handlers:
                     ContentFile(photo_buffer.getvalue())
                 )
             user_data['competitor_photo_count'] = photo_count + 1
-            progress_text = f"✅ Фото конкурента {user_data['competitor_photo_count']}/3 сохранено!"
+            progress_text = f'✅ Фото конкурента {user_data['competitor_photo_count']}/3 сохранено!'
             if user_data['competitor_photo_count'] >= 3:
                 keyboard = [["Завершить конкурентный отчет"]]
-                progress_text += "\n\n🎉 Все фото конкурентов загружены!"
+                progress_text += '\n\n🎉 Все фото конкурентов загружены!'
             else:
                 keyboard = [
                     ["Сделать фото конкурента"],
                     ["Завершить конкурентный отчет"]
                 ]
-                progress_text += f"\nМожно добавить еще {3 - user_data['competitor_photo_count']} фото"
+                progress_text += f'\nМожно добавить еще {3 - user_data['competitor_photo_count']} фото'
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
             await update.message.reply_text(progress_text, reply_markup=reply_markup)
         except PhotoReport.DoesNotExist:
-            await update.message.reply_text("❌ Ошибка: отчет конкурента не найден")
+            await update.message.reply_text('❌ Ошибка: отчет конкурента не найден')
         return COMPETITOR_MODE
 
     async def handle_competitor_text(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Обработка текста в режиме конкурентов"""
+        """Обработка текста в режиме конкурентов."""
         text = update.message.text
         user_data = context.user_data
-        if text == "Завершить конкурентный отчет":
+        if text == 'Завершить конкурентный отчет':
             return await self.finish_competitor_report(update, context)
-        elif text == "Сделать фото конкурента":
-            await update.message.reply_text("📸 Отправьте фото конкурента в чат")
+        elif text == 'Сделать фото конкурента':
+            await update.message.reply_text('📸 Отправьте фото конкурента в чат')
         else:
             try:
                 report = await sync_to_async(PhotoReport.objects.get)(id=user_data['competitor_report_id'])
                 report.comment = text
                 await sync_to_async(report.save)()
-                await update.message.reply_text("✅ Комментарий к конкурентам сохранен!")
+                await update.message.reply_text('✅ Комментарий к конкурентам сохранен!')
             except PhotoReport.DoesNotExist:
-                await update.message.reply_text("❌ Ошибка: отчет конкурента не найден")
+                await update.message.reply_text('❌ Ошибка: отчет конкурента не найден')
         return COMPETITOR_MODE
 
     async def finish_report(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Завершение основного отчета"""
+        """Завершение основного отчета."""
         user_data = context.user_data
         try:
             report = await sync_to_async(PhotoReport.objects.get)(id=user_data['report_id'])
             photos_count = await sync_to_async(report.get_photos_count)()
-            keyboard = [["📋 Новый отчет"]]
+            keyboard = [
+                ["📋 Новый отчет"],
+                ["📊 Статистика"]
+            ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             await update.message.reply_text(
-                f"✅ *Отчет завершен!*\n\n"
-                f"📊 *Детали отчета:*\n"
-                f"• Бренд: {user_data['brand_name']}\n"
-                f"• Фото: {photos_count}/3\n"
-                f"• Сеть: {user_data['chain_name']}\n"
-                f"• Категория: {user_data['category_name']}\n\n"
-                f"Нажмите кнопку ниже для создания нового отчета",
+                f'✅ *Отчет завершен!*\n\n'
+                f'📊 *Детали отчета:*\n'
+                f'• Бренд: {user_data['brand_name']}\n'
+                f'• Фото: {photos_count}/3\n'
+                f'• Сеть: {user_data['chain_name']}\n'
+                f'• Категория: {user_data['category_name']}\n\n'
+                f'Выберите следующее действие:',
                 parse_mode='Markdown',
                 reply_markup=reply_markup
             )
         except PhotoReport.DoesNotExist:
-            keyboard = [["📋 Новый отчет"]]
+            keyboard = [
+                ["📋 Новый отчет"],
+                ["📊 Статистика"]
+            ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             await update.message.reply_text(
-                "❌ Ошибка при завершении отчета\n"
-                "Нажмите кнопку ниже для создания нового отчета",
+                '❌ Ошибка при завершении отчета\n'
+                'Выберите следующее действие:',
                 reply_markup=reply_markup
             )
         user_data.clear()
         return ConversationHandler.END
 
     async def finish_competitor_report(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Завершение конкурентного отчета"""
+        """Завершение конкурентного отчета."""
         user_data = context.user_data
         try:
             report = await sync_to_async(PhotoReport.objects.get)(id=user_data['competitor_report_id'])
             photos_count = await sync_to_async(report.get_photos_count)()
-            keyboard = [["📋 Новый отчет"]]
+            keyboard = [
+                ["📋 Новый отчет"],
+                ["📊 Статистика"]
+            ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             await update.message.reply_text(
-                f"✅ *Конкурентный отчет завершен!*\n\n"
-                f"📊 *Детали отчета:*\n"
-                f"• Основной бренд: {user_data['brand_name']}\n"
-                f"• Фото конкурентов: {photos_count}/3\n"
-                f"• Сеть: {user_data['chain_name']}\n"
-                f"• Категория: {user_data['category_name']}\n\n"
-                f"Нажмите кнопку ниже для создания нового отчета",
+                f'✅ *Конкурентный отчет завершен!*\n\n'
+                f'📊 *Детали отчета:*\n'
+                f'• Основной бренд: {user_data['brand_name']}\n'
+                f'• Фото конкурентов: {photos_count}/3\n'
+                f'• Сеть: {user_data['chain_name']}\n'
+                f'• Категория: {user_data['category_name']}\n\n'
+                f'Выберите следующее действие:',
                 parse_mode='Markdown',
                 reply_markup=reply_markup
             )
         except PhotoReport.DoesNotExist:
-            keyboard = [["📋 Новый отчет"]]
+            keyboard = [
+                ["📋 Новый отчет"],
+                ["📊 Статистика"]
+            ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             await update.message.reply_text(
-                "❌ Ошибка при завершении конкурентного отчета\n"
-                "Нажмите кнопку ниже для создания нового отчета",
+                '❌ Ошибка при завершении конкурентного отчета\n'
+                'Выберите следующее действие:',
                 reply_markup=reply_markup
             )
         user_data.clear()
         return ConversationHandler.END
 
     async def handle_finish_anywhere(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Обработка завершения отчета из любого состояния"""
+        """Обработка завершения отчета из любого состояния."""
         user_data = context.user_data
         if 'report_id' in user_data:
             return await self.finish_report(update, context)
@@ -512,22 +524,33 @@ class Handlers:
             return await self.cancel(update, context)
 
     async def cancel(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Отмена операции"""
-        keyboard = [["📋 Новый отчет"]]
+        """Отмена операции."""
+        keyboard = [
+            ["📋 Новый отчет"],
+            ["📊 Статистика"]
+        ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
         await update.message.reply_text(
-            "❌ Операция отменена. Нажмите кнопку ниже для создания нового отчета.",
+            '❌ Операция отменена. Выберите следующее действие:',
             reply_markup=reply_markup
         )
         context.user_data.clear()
         return ConversationHandler.END
 
     async def unknown_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Обработка неизвестных команд и кнопки 'Новый отчет'"""
+        """Обработка неизвестных команд и кнопки - Новый отчет."""
         text = update.message.text
-        if text == "📋 Новый отчет" or text == "Новый отчет":
+        if text == '📋 Новый отчет' or text == 'Новый отчет':
             return await self.new_report(update, context)
+        elif text == '📊 Статистика' or text == 'Статистика':
+            return await self.show_statistics(update, context)
         else:
+            keyboard = [
+                ["📋 Новый отчет"],
+                ["📊 Статистика"]
+            ]
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             await update.message.reply_text(
-                "❌ Неизвестная команда. Используйте /start для начала работы или нажмите '📋 Новый отчет' для создания отчета."
+                '❌ Неизвестная команда. Выберите действие:',
+                reply_markup=reply_markup
             )
