@@ -93,11 +93,11 @@ class Handlers:
             if not stats_data:
                 return '❌ Ошибка при получении статистики'
             if not stats_data['reports']:
-                return f'📊 *Статистика за {stats_data['month_name']} {stats_data['year']}*\n\n' \
-                       'Отчетов за этот месяц еще нет.'
+                return (f'📊 *Статистика за {stats_data["month_name"]} {stats_data["year"]}*\n\n'
+                        'Отчетов за этот месяц еще нет.')
             stats = stats_data['stats']
             sorted_chains = sorted(stats.keys())
-            stats_text = f'📊 *Статистика за {stats_data['month_name']} {stats_data['year']}:*\n\n'
+            stats_text = f'📊 *Статистика за {stats_data["month_name"]} {stats_data["year"]}:*\n\n'
             total_reports = 0
             for chain in sorted_chains:
                 sorted_brands = sorted(stats[chain].keys())
@@ -300,7 +300,7 @@ class Handlers:
                     ContentFile(photo_buffer.getvalue())
                 )
             user_data['photo_count'] = photo_count + 1
-            progress_text = f'✅ Фото {user_data['photo_count']}/3 сохранено!'
+            progress_text = f'✅ Фото {user_data["photo_count"]}/3 сохранено!'
             if user_data['photo_count'] >= 3:
                 keyboard = [
                     ["Завершить отчет"],
@@ -313,7 +313,7 @@ class Handlers:
                     ["Завершить отчет"],
                     ["Перейти к конкурентам"]
                 ]
-                progress_text += f'\nМожно добавить еще {3 - user_data['photo_count']} фото'
+                progress_text += f'\nМожно добавить еще {3 - user_data["photo_count"]} фото'
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
             await update.message.reply_text(progress_text, reply_markup=reply_markup)
         except PhotoReport.DoesNotExist:
@@ -407,7 +407,7 @@ class Handlers:
                     ContentFile(photo_buffer.getvalue())
                 )
             user_data['competitor_photo_count'] = photo_count + 1
-            progress_text = f'✅ Фото конкурента {user_data['competitor_photo_count']}/3 сохранено!'
+            progress_text = f'✅ Фото конкурента {user_data["competitor_photo_count"]}/3 сохранено!'
             if user_data['competitor_photo_count'] >= 3:
                 keyboard = [["Завершить конкурентный отчет"]]
                 progress_text += '\n\n🎉 Все фото конкурентов загружены!'
@@ -416,7 +416,7 @@ class Handlers:
                     ["Сделать фото конкурента"],
                     ["Завершить конкурентный отчет"]
                 ]
-                progress_text += f'\nМожно добавить еще {3 - user_data['competitor_photo_count']} фото'
+                progress_text += f'\nМожно добавить еще {3 - user_data["competitor_photo_count"]} фото'
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
             await update.message.reply_text(progress_text, reply_markup=reply_markup)
         except PhotoReport.DoesNotExist:
@@ -455,10 +455,10 @@ class Handlers:
             await update.message.reply_text(
                 f'✅ *Отчет завершен!*\n\n'
                 f'📊 *Детали отчета:*\n'
-                f'• Бренд: {user_data['brand_name']}\n'
+                f'• Бренд: {user_data["brand_name"]}\n'
                 f'• Фото: {photos_count}/3\n'
-                f'• Сеть: {user_data['chain_name']}\n'
-                f'• Категория: {user_data['category_name']}\n\n'
+                f'• Сеть: {user_data["chain_name"]}\n'
+                f'• Категория: {user_data["category_name"]}\n\n'
                 f'Выберите следующее действие:',
                 parse_mode='Markdown',
                 reply_markup=reply_markup
@@ -491,10 +491,10 @@ class Handlers:
             await update.message.reply_text(
                 f'✅ *Конкурентный отчет завершен!*\n\n'
                 f'📊 *Детали отчета:*\n'
-                f'• Основной бренд: {user_data['brand_name']}\n'
+                f'• Основной бренд: {user_data["brand_name"]}\n'
                 f'• Фото конкурентов: {photos_count}/3\n'
-                f'• Сеть: {user_data['chain_name']}\n'
-                f'• Категория: {user_data['category_name']}\n\n'
+                f'• Сеть: {user_data["chain_name"]}\n'
+                f'• Категория: {user_data["category_name"]}\n\n'
                 f'Выберите следующее действие:',
                 parse_mode='Markdown',
                 reply_markup=reply_markup
