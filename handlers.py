@@ -2,6 +2,8 @@ import os
 import django
 import logging
 import io
+from datetime import datetime
+from collections import defaultdict
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'photo_report.settings')
 django.setup()
@@ -26,7 +28,10 @@ class Handlers:
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Обработчик команды /start"""
         user = update.effective_user
-        keyboard = [["📋 Новый отчет"]]
+        keyboard = [
+            ["📋 Новый отчет"],
+            ["📊 Статистика"]
+        ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
         db_user, created = await sync_to_async(User.objects.get_or_create)(
             telegram_id=user.id,
@@ -40,9 +45,47 @@ class Handlers:
         welcome_text = (
             f"Добро пожаловать, {user.first_name}!\n\n"
             "Я бот для создания фотоотчетов по мерчандайзингу.\n"
-            "Нажмите кнопку ниже для создания нового отчета"
+            "Выберите действие:"
         )
         await update.message.reply_text(welcome_text, reply_markup=reply_markup)
+
+    async def get_monthly_statistics_data(self, year=None, month=None):
+        """Получение статистики за месяц(если None - текущий)"""
+        try:
+            now = datetime.now()
+            current_year = year if year is not None else now.year
+            current_month = month if month is not None else now.month
+            reports = await sync_to_async(list)(
+                PhotoReport.objects.filter(
+                    created_at__year=current_year,
+                    created_at__month=current_month
+                ).select_related('trading_client', 'brand')
+            )
+            if not reports:
+                return {
+                    'reports': [],
+                    'year': current_year,
+                    'month': current_month,
+                    'month_name': now.strftime('%B'),
+                    'total_reports': 0,
+                    'stats': {}
+                }
+            stats = defaultdict(lambda: defaultdict(int))
+            for report in reports:
+                chain_name = report.trading_client.name
+                brand_name = report.brand.name
+                stats[chain_name][brand_name] += 1
+            return {
+                'reports': reports,
+                'year': current_year,
+                'month': current_month,
+                'month_name': now.strftime('%B'),
+                'total_reports': len(reports),
+                'stats': dict(stats)
+            }
+        except Exception as e:
+            logger.error(f'Ошибка при получении статистики: {e}')
+            return None
 
     async def new_report(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Начало создания нового отчета"""

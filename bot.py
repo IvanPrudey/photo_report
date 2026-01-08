@@ -33,7 +33,7 @@ class PharmacyBot:
         finish_text = MessageHandler(filters.Regex(r'^Завершить.*отчет$'), self.handlers.handle_finish_anywhere)
         new_report_button = MessageHandler(filters.Regex(r'^(📋 )?Новый отчет$'), self.handlers.new_report)
         stats_button = MessageHandler(filters.Regex(r'^(📊 )?Статистика$'), self.handlers.show_statistics)
-        
+
         conv_handler = ConversationHandler(
             entry_points=[
                 CommandHandler('new_report', self.handlers.new_report),
