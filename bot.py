@@ -32,6 +32,8 @@ class PharmacyBot:
         cancel_command = CommandHandler('cancel', self.handlers.cancel)
         finish_text = MessageHandler(filters.Regex(r'^Завершить.*отчет$'), self.handlers.handle_finish_anywhere)
         new_report_button = MessageHandler(filters.Regex(r'^(📋 )?Новый отчет$'), self.handlers.new_report)
+        stats_button = MessageHandler(filters.Regex(r'^(📊 )?Статистика$'), self.handlers.show_statistics)
+        
         conv_handler = ConversationHandler(
             entry_points=[
                 CommandHandler('new_report', self.handlers.new_report),
@@ -61,23 +63,20 @@ class PharmacyBot:
                     finish_text
                 ]
             },
-            fallbacks=[cancel_command, finish_text, new_report_button]
+            fallbacks=[cancel_command, finish_text, new_report_button, stats_button]
         )
-
         self.application.add_handler(CommandHandler("start", self.handlers.start))
         self.application.add_handler(conv_handler)
-
-        # Обновляем unknown_command, чтобы обрабатывать все текстовые сообщения
         self.application.add_handler(
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.unknown_command)
         )
 
     def run(self):
         """Запуск бота"""
+        print("Запуск бота - ✅ выполнено!")
         self.application.run_polling()
 
 
 if __name__ == "__main__":
     bot = PharmacyBot()
-    print("Запуск бота - выполнено!")
     bot.run()
