@@ -1,7 +1,7 @@
-from constants.constants import ROLE_CHOICES
+from constants.constants import ROLE_CHOICES, CATEGORY_CHOICES
 
 
-class TestProjectConstants:
+class TestConstants:
 
     def test_no_empty_two_roles(self):
         assert len(ROLE_CHOICES) != 0, 'Список ролей пуст, определите роли в константах.'
@@ -18,3 +18,6 @@ class TestProjectConstants:
         roles_dict = dict(ROLE_CHOICES)
         assert roles_dict['admin'] == 'Администратор', 'Роль admin должна отображаться как "Администратор"'
         assert roles_dict['user'] == 'Сотрудник', 'Роль user должна отображаться как "Сотрудник"'
+
+    def test_no_empty_category(self):
+        assert len(CATEGORY_CHOICES) != 0, 'Список категорий пуст,определите роли в константах.'
