@@ -26,3 +26,11 @@ def test_user(db):
         last_name='User',
         role='user'
     )
+
+@pytest.fixture
+def test_trading_client(db):
+    return TradingClient.objects.create(
+        name='Тестовая аптечная сеть',
+        is_active=True
+    )
+
