@@ -34,3 +34,18 @@ def test_trading_client(db):
         is_active=True
     )
 
+
+@pytest.fixture
+def test_category(db):
+    return CategoryProduct.objects.create(
+        name='ЛС'
+    )
+
+
+@pytest.fixture
+def test_brand(db, test_category):
+    return BrandProduct.objects.create(
+        name='Тестовый бренд',
+        category=test_category,
+        is_active=True
+    )
