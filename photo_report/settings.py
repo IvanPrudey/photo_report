@@ -25,8 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+def get_env_or_raise(var_name: str):
+    value = os.getenv(var_name)
+    if not value:
+        raise ValueError(f'Переменная окружения {var_name} не установалена!')
+    return value
+
+
+SECRET_KEY = get_env_or_raise('SECRET_KEY')
+BOT_TOKEN = get_env_or_raise('BOT_TOKEN')
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = []
