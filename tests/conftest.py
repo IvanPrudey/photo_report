@@ -21,9 +21,9 @@ django.setup()
 def test_user(db):
     return User.objects.create(
         telegram_id=123456789,
-        username='test_user',
-        first_name='Test',
-        last_name='User',
+        username='ivanov_ivan',
+        first_name='Ivanov',
+        last_name='Ivan',
         role='user'
     )
 
