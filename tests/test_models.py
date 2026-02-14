@@ -36,6 +36,11 @@ class TestCategoryModel:
 
 class TestBrandModel:
 
+    def test_brand_creation(self, test_brand, test_category):
+        assert test_brand.name == 'Тестовый бренд', 'name должно иметь значение Тестовый бренд'
+        assert test_brand.category == test_category, 'Бренд должен быть связан с правильной категорией'
+        assert test_brand.is_active is True, 'is_active должно иметь значение True'
+
 
 class PhotoReportModel:
     pass
