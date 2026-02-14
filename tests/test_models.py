@@ -19,3 +19,10 @@ class TestUserModel:
         assert test_user.last_name == 'Ivan', 'last_name должно иметь значение Ivan'
         assert test_user.role == 'user', 'role должно иметь значение user'
         assert test_user.is_verified is False, 'is_verified должно иметь значение False'
+
+
+class TestTradingClientModel:
+
+    def test_trading_client_creation(self, test_trading_client):
+        assert test_trading_client.name == 'Тестовая аптечная сеть'
+        assert test_trading_client.is_active is True
