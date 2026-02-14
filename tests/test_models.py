@@ -24,5 +24,5 @@ class TestUserModel:
 class TestTradingClientModel:
 
     def test_trading_client_creation(self, test_trading_client):
-        assert test_trading_client.name == 'Тестовая аптечная сеть'
-        assert test_trading_client.is_active is True
+        assert test_trading_client.name == 'Тестовая аптечная сеть', 'name должно иметь значение Тестовая аптечная сеть'
+        assert test_trading_client.is_active is True, 'is_active должно иметь значение True'

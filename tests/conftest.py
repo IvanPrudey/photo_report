@@ -27,6 +27,7 @@ def test_user(db):
         role='user'
     )
 
+
 @pytest.fixture
 def test_trading_client(db):
     return TradingClient.objects.create(
