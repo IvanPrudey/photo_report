@@ -26,3 +26,16 @@ class TestTradingClientModel:
     def test_trading_client_creation(self, test_trading_client):
         assert test_trading_client.name == 'Тестовая аптечная сеть', 'name должно иметь значение Тестовая аптечная сеть'
         assert test_trading_client.is_active is True, 'is_active должно иметь значение True'
+
+
+class TestCategoryModel:
+
+    def test_category_creation(self, test_category):
+        assert test_category.name == 'ЛС', 'name должно иметь значение ЛС'
+
+
+class TestBrandModel:
+
+
+class PhotoReportModel:
+    pass
