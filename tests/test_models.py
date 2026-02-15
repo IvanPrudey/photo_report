@@ -32,6 +32,18 @@ class TestCategoryModel:
 
     def test_category_creation(self, test_category):
         assert test_category.name == 'ЛС', 'name должно иметь значение ЛС'
+        assert test_category.get_name_display() == 'Лекарственные', 'display_name должно быть Лекарственные'
+
+    def test_category_str_method(self, db):
+        categories_data = [
+            ('ЛС', 'Лекарственные'),
+            ('КС', 'Косметические'),
+            ('ОТС', 'Безрецептурные'),
+        ]
+        for code, display_name in categories_data:
+            category = CategoryProduct.objects.create(name=code)
+            assert str(category) == display_name, f'Для {code} должно быть представление {display_name}'
+            assert category.get_name_display() == display_name
 
 
 class TestBrandModel:
