@@ -45,6 +45,13 @@ class TestCategoryModel:
             assert str(category) == display_name, f'Для {code} должно быть представление {display_name}'
             assert category.get_name_display() == display_name
 
+    def test_category_incorrect_choice(self, db):
+        with pytest.raises(ValidationError):
+            category = CategoryProduct(
+                name='INCORRECT'
+            )
+            category.full_clean()
+
 
 class TestBrandModel:
 
