@@ -20,6 +20,15 @@ class TestUserModel:
         assert test_user.role == 'user', 'role должно иметь значение user'
         assert test_user.is_verified is False, 'is_verified должно иметь значение False'
 
+    def test_user_incorrect_role(self, db):
+        with pytest.raises(ValidationError):
+            user = User(
+                telegram_id=234567890,
+                username='incorrect_user',
+                role='superuser'
+            )
+            user.full_clean()
+
 
 class TestTradingClientModel:
 
