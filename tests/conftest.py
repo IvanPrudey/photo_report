@@ -53,17 +53,24 @@ def test_brand(db, test_category):
 
 
 @pytest.fixture
-def test_photo_report(db, test_user, test_trading_client, test_category, test_brand):
-    photo_file = SimpleUploadedFile(
-        'test_photo.jpg',
-        b'fake image content',
+def sample_image():
+    return SimpleUploadedFile(
+        name='test_photo.jpg',
+        content=b'fake image content',
         content_type='image/jpeg'
     )
-    return PhotoReport.objects.create(
+
+
+@pytest.fixture
+def test_photo_report(db, test_user, test_trading_client, test_category, test_brand, sample_image):
+    report = PhotoReport.objects.create(
         user=test_user,
         trading_client=test_trading_client,
         category=test_category,
         brand=test_brand,
         is_competitor=False,
-        photo_1=photo_file
+        photo_1=sample_image
     )
+    yield report
+    if report.photo_1:
+        report.photo_1.delete(save=False)
