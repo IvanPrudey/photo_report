@@ -70,5 +70,13 @@ class TestBrandModel:
         assert test_brand.is_active is True, 'is_active должно иметь значение True'
 
 
-class PhotoReportModel:
-    pass
+class TestPhotoReportModel:
+
+    def test_photo_report_creation(self, test_photo_report):
+        report = test_photo_report
+        assert report.user is not None
+        assert report.trading_client is not None
+        assert report.category is not None
+        assert report.brand is not None
+        assert report.is_competitor is False
+        assert report.photo_1 is not None
