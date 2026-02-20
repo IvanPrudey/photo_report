@@ -83,7 +83,7 @@ class TestPhotoReportModel:
         assert report.comment == ''
         assert report.created_at is not None
 
-    def test_photo_report_with_all_filds(self, test_user, test_trading_client, test_category, test_brand, sample_image):
+    def test_photo_report_with_all_fields(self, test_user, test_trading_client, test_category, test_brand, sample_image):
         report = PhotoReport.objects.create(
             user=test_user,
             trading_client=test_trading_client,
@@ -101,3 +101,17 @@ class TestPhotoReportModel:
         assert report.photo_3 is not None
         assert report.comment == 'Тестовый комментарий'
         assert report.get_photos_count() == 3
+
+    def test_photo_report_minimal_fields(self, test_user, test_trading_client, test_category, test_brand):
+        report = PhotoReport.objects.create(
+            user=test_user,
+            trading_client=test_trading_client,
+            category=test_category,
+            brand=test_brand
+        )
+        assert report.is_competitor is False
+        assert not report.photo_1
+        assert not report.photo_2
+        assert not report.photo_3
+        assert report.comment == ''
+        assert report.get_photos_count() == 0
