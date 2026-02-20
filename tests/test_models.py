@@ -72,7 +72,7 @@ class TestBrandModel:
 
 class TestPhotoReportModel:
 
-    def test_photo_report_creation(self, test_photo_report):
+    def test_photo_report_creation_with_fixture(self, test_photo_report):
         report = test_photo_report
         assert report.user is not None
         assert report.trading_client is not None
@@ -80,3 +80,24 @@ class TestPhotoReportModel:
         assert report.brand is not None
         assert report.is_competitor is False
         assert report.photo_1 is not None
+        assert report.comment == ''
+        assert report.created_at is not None
+
+    def test_photo_report_with_all_filds(self, test_user, test_trading_client, test_category, test_brand, sample_image):
+        report = PhotoReport.objects.create(
+            user=test_user,
+            trading_client=test_trading_client,
+            category=test_category,
+            brand=test_brand,
+            is_competitor=True,
+            photo_1=sample_image,
+            photo_2=sample_image,
+            photo_3=sample_image,
+            comment='Тестовый комментарий'
+        )
+        assert report.is_competitor is True
+        assert report.photo_1 is not None
+        assert report.photo_2 is not None
+        assert report.photo_3 is not None
+        assert report.comment == 'Тестовый комментарий'
+        assert report.get_photos_count() == 3
